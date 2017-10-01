@@ -3,6 +3,6 @@ url [![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.or
 
 Package url provides functions for parsing, decoding and encoding URLs.
 
-## Installation
+## Install
 
-    go get github.com/opennota/url
+    go get -u github.com/opennota/url
