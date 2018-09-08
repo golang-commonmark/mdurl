@@ -6,7 +6,6 @@ go:
   - master
 
 install:
-  - go get github.com/opennota/byteutil
   - go build ./...
 
 script:

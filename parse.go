@@ -1,45 +1,16 @@
-// This program is free software: you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by the Free
-// Software Foundation, either version 3 of the License, or (at your option)
-// any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-// Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright 2015 The Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package url
 
 import (
 	"errors"
 	"strings"
-
-	"github.com/opennota/byteutil"
 )
 
 // ErrMissingScheme error is returned by Parse if the passed URL starts with a colon.
 var ErrMissingScheme = errors.New("missing protocol scheme")
-
-var (
-	cs1 [256]bool
-	cs2 [256]bool
-	cs3 [256]bool
-)
-
-func init() {
-	for _, b := range "+-.0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" {
-		cs1[b] = true
-	}
-	for _, b := range "#/?" {
-		cs2[b] = true
-	}
-	for _, b := range "\t\r\n \"#%'/;<>?\\^`{|}" {
-		cs3[b] = true
-	}
-}
 
 var slashedProtocol = map[string]bool{
 	"http":   true,
@@ -66,17 +37,17 @@ func findScheme(s string) (int, error) {
 	if b == ':' {
 		return 0, ErrMissingScheme
 	}
-	if !byteutil.IsLetter(b) {
+	if !letter(b) {
 		return 0, nil
 	}
 
 	for i := 1; i < len(s); i++ {
 		b := s[i]
 		switch {
-		case cs1[b]:
-			// do nothing
 		case b == ':':
 			return i, nil
+		case strings.IndexByte("+-.0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", b) != -1:
+			// do nothing
 		default:
 			return 0, nil
 		}
@@ -96,7 +67,8 @@ func Parse(rawurl string) (*URL, error) {
 	rest := rawurl
 	hostless := false
 	if n > 0 {
-		url.Scheme, rest = byteutil.ToLower(rest[:n]), rest[n+1:]
+		url.RawScheme = rest[:n]
+		url.Scheme, rest = strings.ToLower(rest[:n]), rest[n+1:]
 		if url.Scheme == "javascript" {
 			hostless = true
 		}
@@ -107,7 +79,7 @@ func Parse(rawurl string) (*URL, error) {
 	}
 
 	if !hostless && (url.Slashes || (url.Scheme != "" && !slashedProtocol[url.Scheme])) {
-		hostEnd := byteutil.IndexAnyTable(rest, &cs2)
+		hostEnd := strings.IndexAny(rest, "#/?")
 		atSign := -1
 		i := hostEnd
 		if i == -1 {
@@ -125,7 +97,7 @@ func Parse(rawurl string) (*URL, error) {
 			url.Auth, rest = rest[:atSign], rest[atSign+1:]
 		}
 
-		hostEnd = byteutil.IndexAnyTable(rest, &cs3)
+		hostEnd = strings.IndexAny(rest, "\t\r\n \"#%'/;<>?\\^`{|}")
 		if hostEnd == -1 {
 			hostEnd = len(rest)
 		}
@@ -136,14 +108,14 @@ func Parse(rawurl string) (*URL, error) {
 
 		if len(host) > 1 {
 			b := host[hostEnd-1]
-			if byteutil.IsDigit(b) {
+			if digit(b) {
 				for i := len(host) - 2; i >= 0; i-- {
 					b := host[i]
 					if b == ':' {
 						url.Host, url.Port = host[:i], host[i+1:]
 						break
 					}
-					if !byteutil.IsDigit(b) {
+					if !digit(b) {
 						break
 					}
 				}

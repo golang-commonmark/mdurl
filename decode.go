@@ -1,23 +1,12 @@
-// This program is free software: you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by the Free
-// Software Foundation, either version 3 of the License, or (at your option)
-// any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-// Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Copyright 2015 The Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 package url
 
 import (
 	"bytes"
 	"unicode/utf8"
-
-	"github.com/opennota/byteutil"
 )
 
 func advance(s string, pos int) (byte, int) {
@@ -28,9 +17,9 @@ func advance(s string, pos int) (byte, int) {
 		return s[pos], pos + 1
 	}
 	if pos+2 < len(s) &&
-		byteutil.IsHexDigit(s[pos+1]) &&
-		byteutil.IsHexDigit(s[pos+2]) {
-		return byteutil.Unhex(s[pos+1])<<4 | byteutil.Unhex(s[pos+2]), pos + 3
+		hexDigit(s[pos+1]) &&
+		hexDigit(s[pos+2]) {
+		return unhex(s[pos+1])<<4 | unhex(s[pos+2]), pos + 3
 	}
 	return '%', pos + 1
 }
@@ -46,9 +35,9 @@ outer:
 	for i < len(rawurl) {
 		r, rlen := utf8.DecodeRuneInString(rawurl[i:])
 		if r == '%' && i+2 < len(rawurl) &&
-			byteutil.IsHexDigit(rawurl[i+1]) &&
-			byteutil.IsHexDigit(rawurl[i+2]) {
-			b := byteutil.Unhex(rawurl[i+1])<<4 | byteutil.Unhex(rawurl[i+2])
+			hexDigit(rawurl[i+1]) &&
+			hexDigit(rawurl[i+2]) {
+			b := unhex(rawurl[i+1])<<4 | unhex(rawurl[i+2])
 			if b < 0x80 {
 				buf.WriteByte(b)
 				i += 3
