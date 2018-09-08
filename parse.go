@@ -20,12 +20,12 @@ var slashedProtocol = map[string]bool{
 	"file":   true,
 }
 
-func split(s string, c byte) (string, string) {
+func split(s string, c byte) (string, string, bool) {
 	i := strings.IndexByte(s, c)
 	if i < 0 {
-		return s, ""
+		return s, "", false
 	}
-	return s[:i], s[i+1:]
+	return s[:i], s[i+1:], true
 }
 
 func findScheme(s string) (int, error) {
@@ -139,8 +139,8 @@ func Parse(rawurl string) (*URL, error) {
 		}
 	}
 
-	rest, url.Fragment = split(rest, '#')
-	url.Path, url.RawQuery = split(rest, '?')
+	rest, url.Fragment, url.HasFragment = split(rest, '#')
+	url.Path, url.RawQuery, url.HasQuery = split(rest, '?')
 
 	return &url, nil
 }

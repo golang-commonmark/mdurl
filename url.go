@@ -7,16 +7,18 @@ package mdurl
 
 // A URL represents a parsed URL.
 type URL struct {
-	Scheme    string
-	RawScheme string
-	Slashes   bool
-	Auth      string
-	Host      string
-	Port      string
-	Path      string
-	RawQuery  string
-	Fragment  string
-	IPv6      bool
+	Scheme      string
+	RawScheme   string
+	Slashes     bool
+	Auth        string
+	Host        string
+	Port        string
+	Path        string
+	RawQuery    string
+	HasQuery    bool
+	Fragment    string
+	HasFragment bool
+	IPv6        bool
 }
 
 // String reassembles the URL into a URL string.
@@ -40,10 +42,10 @@ func (u *URL) String() string {
 	if u.Port != "" {
 		size += len(u.Port) + 1
 	}
-	if u.RawQuery != "" {
+	if u.HasQuery {
 		size += len(u.RawQuery) + 1
 	}
-	if u.Fragment != "" {
+	if u.HasFragment {
 		size += len(u.Fragment) + 1
 	}
 	if size == 0 {
@@ -85,12 +87,12 @@ func (u *URL) String() string {
 		i += copy(buf[i:], u.Port)
 	}
 	i += copy(buf[i:], u.Path)
-	if u.RawQuery != "" {
+	if u.HasQuery {
 		buf[i] = '?'
 		i++
 		i += copy(buf[i:], u.RawQuery)
 	}
-	if u.Fragment != "" {
+	if u.HasFragment {
 		buf[i] = '#'
 		i++
 		i += copy(buf[i:], u.Fragment)
