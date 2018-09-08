@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package url
+package mdurl
 
 func hexDigit(b byte) bool {
 	return digit(b) || b >= 'a' && b <= 'f' || b >= 'A' && b <= 'F'

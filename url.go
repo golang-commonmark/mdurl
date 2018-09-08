@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package url provides functions for parsing, decoding and encoding URLs.
-package url
+package mdurl
 
 // A URL represents a parsed URL.
 type URL struct {

@@ -1,8 +1,8 @@
-url [![GoDoc](http://godoc.org/github.com/opennota/url?status.svg)](http://godoc.org/github.com/opennota/url) [![Build Status](https://travis-ci.org/opennota/url.png?branch=master)](https://travis-ci.org/opennota/url)
+url [![GoDoc](http://godoc.org/github.com/golang-commonmark/mdurl?status.svg)](http://godoc.org/github.com/golang-commonmark/mdurl) [![Build Status](https://travis-ci.org/golang-commonmark/mdurl.png?branch=master)](https://travis-ci.org/golang-commonmark/mdurl)
 ===
 
-Package url provides functions for parsing, decoding and encoding URLs.
+Package mdurl provides functions for parsing, decoding and encoding URLs.
 
 ## Install
 
-    go get -u github.com/opennota/url
+    go get -u github.com/golang-commonmark/mdurl
